@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple To-Do List</title>
+
+    <style>
+      /* ==========================================================================
+       1. BASE & RESETS
+       ========================================================================== */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f4f7f6;
+        color: #333;
+        display: flex;
+        justify-content: center;
+        padding: 40px 15px;
+        min-height: 100vh;
+      }
+
+      /* ==========================================================================
+       2. CARD CONTAINER LAYOUT
+       ========================================================================== */
+      .todo-app {
+        background-color: #ffffff;
+        width: 100%;
+        max-width: 480px;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        padding: 30px;
+        height: fit-content;
+      }
+
+      .app-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      /* ==========================================================================
+       3. INPUT & FORM STYLES
+       ========================================================================== */
+      .input-container {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .input-container input {
+        flex: 1;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 15px;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+
+      .input-container input:focus {
+        border-color: #4a90e2;
+      }
+
+      .btn-add {
+        background-color: #4a90e2;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      .btn-add:hover {
+        background-color: #357abd;
+      }
+
+      /* ==========================================================================
+       4. FILTER BUTTONS
+       ========================================================================== */
+      .filter-container {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+      }
+
+      .filter-btn {
+        background: none;
+        border: none;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 14px;
+        color: #666;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s;
+      }
+
+      .filter-btn:hover {
+        background-color: #f0f0f0;
+      }
+
+      .filter-btn.active {
+        background-color: #eef5fc;
+        color: #4a90e2;
+        font-weight: 700;
+      }
+
+      /* ==========================================================================
+       5. TASK LIST & TASK ITEMS
+       ========================================================================== */
+      .task-list {
+        list-style: none;
+        margin-bottom: 20px;
+        max-height: 350px;
+        overflow-y: auto;
+      }
+
+      .task-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px;
+        border-bottom: 1px solid #f0f0f0;
+        border-radius: 6px;
+        transition: background-color 0.2s;
+      }
+
+      .task-item:hover {
+        background-color: #fafafa;
+      }
+
+      .task-content {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+        overflow: hidden;
+      }
+
+      .task-checkbox {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: #4a90e2;
+      }
+
+      .task-text {
+        font-size: 15px;
+        color: #333;
+        word-break: break-word;
+        cursor: pointer;
+      }
+
+      /* Completed state styling */
+      .task-item.completed .task-text {
+        text-decoration: line-through;
+        color: #aaa;
+      }
+
+      .edit-input {
+        flex: 1;
+        padding: 6px 10px;
+        border: 1px solid #4a90e2;
+        border-radius: 4px;
+        font-size: 15px;
+        outline: none;
+      }
+
+      /* Action Buttons (Edit / Delete) */
+      .task-actions {
+        display: flex;
+        gap: 6px;
+      }
+
+      .action-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 13px;
+        transition: background-color 0.2s;
+      }
+
+      .btn-edit {
+        color: #f39c12;
+      }
+
+      .btn-edit:hover {
+        background-color: #fef5e7;
+      }
+
+      .btn-delete {
+        color: #e74c3c;
+      }
+
+      .btn-delete:hover {
+        background-color: #fadbd8;
+      }
+
+      /* Empty State */
+      .empty-message {
+        text-align: center;
+        color: #999;
+        font-size: 14px;
+        padding: 20px 0;
+      }
+
+      /* ==========================================================================
+       6. FOOTER SUMMARY
+       ========================================================================== */
+      .footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        color: #777;
+      }
+
+      .btn-clear {
+        background: none;
+        border: none;
+        color: #e74c3c;
+        cursor: pointer;
+        font-size: 13px;
+      }
+
+      .btn-clear:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- App Structure -->
+    <div class="todo-app">
+      <h1 class="app-title">My To-Do List</h1>
+
+      <!-- Add Task Input Form -->
+      <form id="todoForm" class="input-container">
+        <input
+          type="text"
+          id="taskInput"
+          placeholder="Add a new task..."
+          required
+          autocomplete="off"
+        />
+        <button type="submit" class="btn-add">Add</button>
+      </form>
+
+      <!-- Filter Tabs -->
+      <div class="filter-container">
+        <button class="filter-btn active" onclick="filterTasks('all', this)">
+          All
+        </button>
+        <button class="filter-btn" onclick="filterTasks('pending', this)">
+          Pending
+        </button>
+        <button class="filter-btn" onclick="filterTasks('completed', this)">
+          Completed
+        </button>
+      </div>
+
+      <!-- Dynamic Task List -->
+      <ul id="taskList" class="task-list"></ul>
+
+      <!-- Footer Summary -->
+      <div class="footer">
+        <span id="taskCount">0 tasks left</span>
+        <button class="btn-clear" onclick="clearCompleted()">
+          Clear Completed
+        </button>
+      </div>
+    </div>
+
+    <!-- JavaScript Code -->
+    <script src="./todo.js"></script>
+  </body>
+</html>
